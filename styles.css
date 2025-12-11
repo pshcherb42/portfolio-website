@@ -6,12 +6,12 @@
 }
 
 :root {
-    --primary-color: #3d383e;    /* nuevo: color principal oscuro */
-    --secondary-color: #fbabcc;  /* nuevo: acento rosa (gradiente) */
-    --accent-pink-2: #f5ccde;    /* nuevo: acento rosa claro */
-    --text-color: #3d383e;       /* usar el oscuro para texto principal */
+    --primary-color: #3d383e;    /* new: dark primary color */
+    --secondary-color: #fbabcc;  /* new: pink accent (gradient) */
+    --accent-pink-2: #f5ccde;    /* new: light pink accent */
+    --text-color: #3d383e;       /* use dark color for main text */
     --text-light: #6b7280;
-    --bg-color: #f8fbfe;         /* nuevo: fondo principal claro */
+    --bg-color: #f8fbfe;         /* new: light main background */
     --bg-light: #ffffff;
     --border-color: #e9e7ea;
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
@@ -674,7 +674,7 @@ body {
 /* Gallery styles */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 16px;
   align-items: stretch;
 }
