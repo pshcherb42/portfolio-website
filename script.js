@@ -207,14 +207,14 @@ if (bookingForm) {
         });
         
         // Basic validation
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const phone = formData.get('phone');
-        const city = formData.get('city');
+        const name = formData.get('name')?.trim();
+        const email = formData.get('email')?.trim();
+        const phone = formData.get('phone')?.trim();
+        const city = formData.get('city')?.trim();
         const previousClient = formData.get('previous-client');
-        const placement = formData.get('placement');
-        const size = formData.get('size');
-        const description = formData.get('description');
+        const placement = formData.get('placement')?.trim();
+        const size = formData.get('size')?.trim();
+        const description = formData.get('description')?.trim();
         
         if (name && email && phone && city && previousClient && placement && size && description) {
             // Here you would typically send the form data to a server
