@@ -64,38 +64,183 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-// Observe all skill cards
-document.querySelectorAll('.skill-card').forEach(card => {
+// Observe all gallery items
+document.querySelectorAll('.gallery-item').forEach(item => {
+    observer.observe(item);
+});
+
+// Observe all blog cards
+document.querySelectorAll('.blog-card').forEach(card => {
     observer.observe(card);
 });
 
-// Observe all project cards
-document.querySelectorAll('.project-card').forEach(card => {
+// Observe all testimonial cards
+document.querySelectorAll('.testimonial-card').forEach(card => {
     observer.observe(card);
 });
 
-// Contact form handling
-const contactForm = document.getElementById('contactForm');
+// Booking form handling
+const bookingForm = document.getElementById('bookingForm');
+const fileInput = document.getElementById('reference');
+const fileList = document.getElementById('fileList');
+let selectedFiles = [];
 
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// File upload handling
+if (fileInput) {
+    fileInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        
+        files.forEach(file => {
+            // Check file type
+            const validTypes = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.txt'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (validTypes.includes(file.type) || validExtensions.includes(fileExtension)) {
+                selectedFiles.push(file);
+            } else {
+                alert(`File "${file.name}" is not a valid format. Please use JPEG, PNG, PDF, or TXT files.`);
+            }
+        });
+        
+        displayFileList();
+        e.target.value = ''; // Reset input to allow selecting the same file again
+    });
+}
+
+function displayFileList() {
+    if (!fileList) return;
     
-    // Get form values
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    const subject = document.getElementById('subject').value;
-    const message = document.getElementById('message').value;
+    fileList.innerHTML = '';
     
-    // Basic validation
-    if (name && email && subject && message) {
-        // Here you would typically send the form data to a server
-        // For now, we'll just show an alert
-        alert('Thank you for your message! I will get back to you soon.');
-        contactForm.reset();
-    } else {
-        alert('Please fill in all fields.');
+    selectedFiles.forEach((file, index) => {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        
+        const fileName = document.createElement('div');
+        fileName.className = 'file-name';
+        fileName.innerHTML = `<i class="fas fa-file"></i> ${file.name} (${formatFileSize(file.size)})`;
+        
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'file-remove';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.type = 'button';
+        removeBtn.onclick = () => removeFile(index);
+        
+        fileItem.appendChild(fileName);
+        fileItem.appendChild(removeBtn);
+        fileList.appendChild(fileItem);
+    });
+}
+
+function removeFile(index) {
+    selectedFiles.splice(index, 1);
+    displayFileList();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Drag and drop for file upload
+const fileUploadLabel = document.querySelector('.file-upload-label');
+
+if (fileUploadLabel) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        fileUploadLabel.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
     }
-});
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        fileUploadLabel.addEventListener(eventName, () => {
+            fileUploadLabel.style.borderColor = 'var(--primary-color)';
+            fileUploadLabel.style.backgroundColor = 'white';
+        });
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+        fileUploadLabel.addEventListener(eventName, () => {
+            fileUploadLabel.style.borderColor = 'var(--border-color)';
+            fileUploadLabel.style.backgroundColor = 'var(--bg-light)';
+        });
+    });
+    
+    fileUploadLabel.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = Array.from(dt.files);
+        
+        files.forEach(file => {
+            const validTypes = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.pdf', '.txt'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (validTypes.includes(file.type) || validExtensions.includes(fileExtension)) {
+                selectedFiles.push(file);
+            } else {
+                alert(`File "${file.name}" is not a valid format. Please use JPEG, PNG, PDF, or TXT files.`);
+            }
+        });
+        
+        displayFileList();
+    });
+}
+
+// Booking form submission
+if (bookingForm) {
+    bookingForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        // Get form values
+        const formData = new FormData(bookingForm);
+        
+        // Add files to form data
+        selectedFiles.forEach(file => {
+            formData.append('reference', file);
+        });
+        
+        // Basic validation
+        const name = formData.get('name');
+        const email = formData.get('email');
+        const phone = formData.get('phone');
+        const city = formData.get('city');
+        const previousClient = formData.get('previous-client');
+        const placement = formData.get('placement');
+        const size = formData.get('size');
+        const description = formData.get('description');
+        
+        if (name && email && phone && city && previousClient && placement && size && description) {
+            // Here you would typically send the form data to a server
+            // For now, we'll just show an alert with summary
+            let summary = `Booking Request Summary:\n\n`;
+            summary += `Name: ${name}\n`;
+            summary += `Email: ${email}\n`;
+            summary += `Phone: ${phone}\n`;
+            summary += `City: ${city}\n`;
+            summary += `Previous Client: ${previousClient}\n`;
+            summary += `Placement: ${placement}\n`;
+            summary += `Size: ${size}\n`;
+            summary += `Files: ${selectedFiles.length} file(s) attached\n\n`;
+            summary += `Thank you! I will review your request and get back to you within 24-48 hours.`;
+            
+            alert(summary);
+            
+            // Reset form
+            bookingForm.reset();
+            selectedFiles = [];
+            displayFileList();
+        } else {
+            alert('Please fill in all required fields marked with *');
+        }
+    });
+}
 
 // Add active state to navigation based on scroll position
 window.addEventListener('scroll', () => {
